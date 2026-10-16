@@ -1,3 +1,5 @@
+<img src="assets/icon.png" width="96" align="right" alt="轻译">
+
 # 轻译 / QuickTranslate
 
 Windows 划词翻译小工具。**C# + WPF（`net10.0-windows`），零 NuGet 依赖**，只用 BCL + WPF + P/Invoke。

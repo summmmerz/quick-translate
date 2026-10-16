@@ -9,3 +9,6 @@ obj/
 publish/
 *.pdb
 selftest*.txt
+
+# 图标脚本的临时对比图（由 tools/make_icon.py 生成）
+assets/preview-sizes.png
