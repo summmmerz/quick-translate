@@ -1,0 +1,80 @@
+<Window x:Class="QuickTranslate.PopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title=""
+        SizeToContent="WidthAndHeight"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        ShowActivated="False"
+        FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <Grid>
+        <!-- 圆点态（不许加 Effect：AllowsTransparency + DropShadow 会把整个窗口
+             逼进软件渲染，划词时肉眼可见地卡一下） -->
+        <Border x:Name="DotBorder" Width="16" Height="16" CornerRadius="8"
+                Background="{StaticResource Accent}"
+                BorderBrush="#101418" BorderThickness="1"
+                Cursor="Hand"
+                MouseLeftButtonDown="Dot_Click"/>
+
+        <!-- 卡片态 -->
+        <Border x:Name="CardBorder" Width="296" MaxHeight="240" CornerRadius="10"
+                Background="{StaticResource BgGlass}"
+                BorderBrush="{StaticResource Line}" BorderThickness="1"
+                Visibility="Collapsed">
+
+            <DockPanel LastChildFill="True">
+                <!-- 头部 -->
+                <Border DockPanel.Dock="Top" Height="30" Background="Transparent">
+                    <Grid Margin="12,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                    VerticalAlignment="Center">
+                            <Ellipse Width="6" Height="6" Fill="{StaticResource Accent}"/>
+                            <TextBlock x:Name="CardDirectionLabel" Text="中 → 英"
+                                       Foreground="{StaticResource Muted}" FontSize="10.5"
+                                       Margin="7,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Button Style="{StaticResource IconBtn}" Content="✕"
+                                HorizontalAlignment="Right" Click="CardClose_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- 底栏 -->
+                <Border DockPanel.Dock="Bottom" Height="30" Background="Transparent">
+                    <Grid Margin="12,0">
+                        <TextBlock x:Name="CardStatusText" Text=""
+                                   Foreground="{StaticResource Muted}" FontSize="11"
+                                   VerticalAlignment="Center"/>
+                        <Button x:Name="CardCopyBtn" Style="{StaticResource MiniBtn}" Content="复制"
+                                HorizontalAlignment="Right" Click="CardCopy_Click"/>
+                    </Grid>
+                </Border>
+
+                <!-- 词典卡片头（只在离线词库命中时出现）-->
+                <StackPanel x:Name="CardDictHead" DockPanel.Dock="Top" Margin="12,0,12,0"
+                            Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="CardPhonetic" Foreground="{StaticResource Accent}"
+                                   FontSize="11"/>
+                        <TextBlock x:Name="CardPos" Foreground="{StaticResource Muted}"
+                                   FontSize="10.5" Margin="7,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock x:Name="CardTags" Foreground="{StaticResource Faint}"
+                               FontSize="10" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- 译文区（可滚动）-->
+                <ScrollViewer DockPanel.Dock="Top" Margin="12,8,12,8"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <TextBox x:Name="CardOutputBox" Style="{StaticResource Reader}"/>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

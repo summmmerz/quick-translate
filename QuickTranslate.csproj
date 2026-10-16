@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>QuickTranslate</AssemblyName>
+    <RootNamespace>QuickTranslate</RootNamespace>
+    <Version>1.0.0</Version>
+    <SelfContained>false</SelfContained>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 离线词库（ECDICT / MIT，由 tools/BuildDict.py 编译），必须与 exe 同目录 -->
+    <Content Include="dict.bin" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

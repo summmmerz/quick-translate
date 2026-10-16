@@ -1,0 +1,117 @@
+<Window x:Class="QuickTranslate.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="轻译"
+        Width="240" Height="94"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual"
+        FontFamily="Microsoft YaHei UI, Segoe UI">
+
+    <!-- 不加 Effect：AllowsTransparency 已经让窗口走软件渲染，再叠 DropShadow
+         会把每次重绘都拖慢一个数量级 -->
+    <Border CornerRadius="11" BorderBrush="{StaticResource Line}" BorderThickness="1"
+            Background="{StaticResource BgGlass}">
+
+        <DockPanel LastChildFill="True">
+            <!-- 标题栏 -->
+            <Border DockPanel.Dock="Top" Height="30" Background="Transparent"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Margin="10,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                VerticalAlignment="Center">
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource Accent}"/>
+                        <TextBlock Text="轻译" Foreground="{StaticResource Fg}" FontSize="11.5"
+                                   Margin="7,0,0,0" VerticalAlignment="Center"/>
+                        <Button x:Name="LangBtn" Style="{StaticResource LangBtn}" Click="Lang_Click"
+                                VerticalAlignment="Center" ToolTip="目标语言">
+                            <TextBlock x:Name="DirectionLabel" Text="自动 ▾"/>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource IconBtn}" Content="⌫" Click="Clear_Click"
+                                ToolTip="清空"/>
+                        <Button Style="{StaticResource IconBtn}" Content="✕" Margin="4,0,0,0"
+                                Click="Exit_Click" ToolTip="退出"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 输入区：Dock=Top，固定高度，不再被 LastChildFill 撑开。
+                 必须用 PreviewKeyDown：AcceptsReturn=True 的 TextBox 会在类处理器里
+                 把 Enter 吃掉（插入换行），冒泡的 KeyDown 根本轮不到我们 -->
+            <Grid DockPanel.Dock="Top" Height="52" Margin="10,4,10,6">
+                <TextBox x:Name="InputBox" Style="{StaticResource Editor}"
+                         AcceptsReturn="True" PreviewKeyDown="InputBox_KeyDown"
+                         TextChanged="InputBox_TextChanged"/>
+                <TextBlock x:Name="InputPlaceholder" Text="输入或粘贴文字，Enter 翻译"
+                           Foreground="{StaticResource Faint}" FontSize="12.5"
+                           IsHitTestVisible="False" VerticalAlignment="Top"/>
+            </Grid>
+
+            <!-- 目标语言下拉。Popup 是独立 HWND，不会被折叠的 ResultHost 或窗口高度裁掉，
+                 所以放在最外层 DockPanel 里、位置对准标题栏那个文字按钮 -->
+            <Popup x:Name="LangPopup" AllowsTransparency="True" StaysOpen="True"
+                   PlacementTarget="{Binding ElementName=LangBtn}" Placement="Bottom" VerticalOffset="2">
+                <Border Background="{StaticResource PanelGlass}" BorderBrush="{StaticResource Line}"
+                        BorderThickness="1" CornerRadius="8" Padding="4">
+                    <ItemsControl x:Name="LangList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource ItemBtn}" Content="{Binding Name}"
+                                        Tag="{Binding Code}" Click="LangPick_Click"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </Popup>
+
+            <!-- 译文区（分隔线 + 译文 + 底栏）：平时整块折叠，Enter 后才展开。
+                 这块恒为 126；窗口高度在 94(折叠) / 220(展开) 之间切，
+                 切换时钉住底边向上生长，见 MainWindow.xaml.cs 的 SetResultVisible -->
+            <DockPanel x:Name="ResultHost" DockPanel.Dock="Top" Height="126"
+                       Visibility="Collapsed">
+                <Rectangle DockPanel.Dock="Top" Height="1" Fill="{StaticResource Line}"
+                           Margin="10,0"/>
+
+                <Border DockPanel.Dock="Bottom" Height="26" Background="Transparent">
+                    <Grid Margin="10,0">
+                        <TextBlock x:Name="StatusText" Text="" Foreground="{StaticResource Muted}"
+                                   FontSize="10.5" VerticalAlignment="Center"/>
+                        <Button x:Name="CopyBtn" Style="{StaticResource MiniBtn}" Content="复制"
+                                HorizontalAlignment="Right" Click="Copy_Click"/>
+                    </Grid>
+                </Border>
+
+                <Grid Margin="10,8,10,8">
+                    <DockPanel LastChildFill="True">
+                        <!-- 词典卡片头：只在离线词库命中时出现，正文仍旧走 OutputBox -->
+                        <StackPanel x:Name="DictHead" DockPanel.Dock="Top" Visibility="Collapsed"
+                                    Margin="0,0,0,5">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="DictPhonetic" Foreground="{StaticResource Accent}"
+                                           FontSize="11.5" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="DictPos" Foreground="{StaticResource Muted}"
+                                           FontSize="10.5" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock x:Name="DictTags" Foreground="{StaticResource Faint}"
+                                       FontSize="10" Margin="0,2,0,0"/>
+                        </StackPanel>
+
+                        <Grid>
+                            <TextBox x:Name="OutputBox" Style="{StaticResource Reader}"/>
+                            <TextBlock x:Name="OutputPlaceholder" Text="译文显示在这里"
+                                       Foreground="{StaticResource Faint}" FontSize="12.5"
+                                       IsHitTestVisible="False" VerticalAlignment="Top"/>
+                        </Grid>
+                    </DockPanel>
+                </Grid>
+            </DockPanel>
+        </DockPanel>
+    </Border>
+</Window>

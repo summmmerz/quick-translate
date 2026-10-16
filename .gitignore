@@ -1,0 +1,11 @@
+# 构建产物
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# 发布/自检产物
+publish/
+*.pdb
+selftest*.txt
